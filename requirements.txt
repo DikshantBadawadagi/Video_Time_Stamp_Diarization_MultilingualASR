@@ -1,0 +1,24 @@
+# FastAPI web framework
+fastapi==0.100.0
+
+# ASGI server
+uvicorn[standard]==0.22.0
+
+# Environment variable management
+python-dotenv==1.0.0
+
+# File uploads
+python-multipart==0.0.6
+
+# MongoDB async client (Motor requires older PyMongo)
+motor==3.1.1
+pymongo==4.5.0
+
+# Whisper for transcription
+openai-whisper==20230314
+
+# PyTorch CPU-only (or GPU if available)
+torch>=2.0.0
+
+# Google Gemini API
+google-generativeai==0.4.0
