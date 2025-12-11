@@ -8,10 +8,28 @@ from pathlib import Path
 
 import os
 
-# Point Whisper/ffmpeg-python to the correct ffmpeg.exe and add to PATH
-FFMPEG_DIR = r"C:\ffmpeg-2025-12-07-git-c4d22f2d2c-full_build\bin"
-os.environ["FFMPEG_BINARY"] = os.path.join(FFMPEG_DIR, "ffmpeg.exe")
-os.environ["PATH"] = FFMPEG_DIR + os.pathsep + os.environ.get("PATH", "")
+
+# Configure ffmpeg location in a portable way:
+# - Prefer FFMPEG_DIR environment variable (set this in Railway or .env)
+# - On Windows fall back to a developer path (existing behavior)
+# - On non-Windows assume `ffmpeg` is available on PATH (typical container/CI)
+env_ffmpeg_dir = os.getenv("FFMPEG_DIR")
+if env_ffmpeg_dir:
+    if os.name == "nt":
+        ffmpeg_bin = os.path.join(env_ffmpeg_dir, "ffmpeg.exe")
+    else:
+        ffmpeg_bin = os.path.join(env_ffmpeg_dir, "ffmpeg")
+    os.environ["FFMPEG_BINARY"] = ffmpeg_bin
+    os.environ["PATH"] = env_ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+else:
+    if os.name == "nt":
+        # keep developer fallback for Windows users
+        FFMPEG_DIR = r"C:\ffmpeg-2025-12-07-git-c4d22f2d2c-full_build\bin"
+        os.environ["FFMPEG_BINARY"] = os.path.join(FFMPEG_DIR, "ffmpeg.exe")
+        os.environ["PATH"] = FFMPEG_DIR + os.pathsep + os.environ.get("PATH", "")
+    else:
+        # in Linux containers (Railway) ffmpeg is usually on PATH as `ffmpeg`
+        os.environ.setdefault("FFMPEG_BINARY", "ffmpeg")
 
 
 import whisper
